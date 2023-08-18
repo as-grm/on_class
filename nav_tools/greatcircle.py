@@ -100,7 +100,7 @@ def getMidPosition(P0,P1,la_md):
 
 # Calculates set of midpoints on orthodrome path
 # dla specifies delta lambda: normally 5,10 deg
-def getPathPointsLong(P0,P1,dla=1):
+def getPathPoints(P0,P1,dla=1):
     
     la_mps = nt.getPathPointsLong(P0[1], P1[1], dla)
     

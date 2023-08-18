@@ -193,15 +193,35 @@ def rad2deg(rr):
     return rr/mat.pi*180.0
 
 
-# Calculates delta LONG in a correct way
-# All calculations are orineted westward 0...360 as hour angles!
-def deltaLong(la0, la1):
-
-    if la0 < 0:
-        la0 = 360 + la0
+# Convert position list to position numpy array
+def position2array(pts):
     
-    if la1 < 0:
-        la1 = 360 + la1
+    nn = len(pts)
+    if nn < 2:
+        print('Input size mismatch: len(pts)={:d}'.format(len(pts)))
+        raise AssertionError()
+        
+    pa = np.zeros((nn,2))
+    for i in range(nn):
+        pa[i,0] = pts[i][0]
+        pa[i,1] = pts[i][1]
+        
+    return pa
+
+
+# Calculates delta LONG in a correct way
+# All calculations are oriented eastward 0...360, opposite as the hour angle!
+def deltaLong(la_0, la_1):
+
+    if la_0 < 0:
+        la0 = 360 + la_0
+    else:
+        la0 = la_0
+    
+    if la_1 < 0:
+        la1 = 360 + la_1
+    else:
+        la1 = la_1
     
     dl = la1 - la0;
     
@@ -250,124 +270,71 @@ def navAngle(w, df, dl):
     
     return c
 
-# Convert position list to position numpy array
-def position2array(pts):
-    
-    nn = len(pts)
-    if nn < 2:
-        print('Input size mismatch: len(pts)={:d}'.format(len(pts)))
-        raise AssertionError()
-        
-    pa = np.zeros((nn,2))
-    for i in range(nn):
-        pa[i,0] = pts[i][0]
-        pa[i,1] = pts[i][1]
-        
-    return pa
 
-# Find crossing point of 180/-180 parallel
-def getCrossingPoints(la_0, la_end, dla):
+# Find integer start lambda based on delta lambda
+def getStartLambda(la0, dl):
     
-    if la_end > 180:
-        k=0
-        lt = la_0
-        while lt < 180:
-            k += 1
-            lt = la_0 + k*dla
-        la_c1 = lt - dla
-        la_c2 = lt - 360
-    else: # la_end < 180
-        k=0
-        lt = la_0
-        while lt > -180:
-            k += 1
-            lt = la_0 - k*dla
-        la_c1 = lt + dla
-        la_c2 = 360 + lt
-    
-    return [la_c1, la_c2]
-    
+    if dl > 0:
+        la_s = mat.ceil(la0)
+    else:
+        la_s = mat.floor(la0)
+        
+    return la_s
+
 
 # Find midpoints in longitude range
 def getMidpoints(la_0, la_1, dla):
+
+    dl = deltaLong(la_0, la_1)
+    dls = np.sign(dl)
+    la_s = getStartLambda(la_0, dl)
     
-    dls = np.sign(deltaLong(la_0, la_1))
     mpa = []
-    
-    if dls > 0:
-        la_s = mat.ceil(la_0)
-        dla_s = mat.fabs(mat.fmod(la_s, dla))
+    mpa.append(la_s)
+    la = la_s
 
-        if (dla - dla_s) < dla/2:
-            la_s = la_s + 2*dla - dla_s
-        else:
-            la_s = la_s + dla - dla_s      
+    # Map lambda into the interval [0...360], easier calculations
+    if la_0 < 0:
+        la0 = 360 + la_0
     else:
-        la_s = mat.floor(la_0)
-        dla_s = mat.fabs(mat.fmod(la_s, dla))
+        la0 = la_0
 
-        if (dla - dla_s) < dla/2:
-            la_s = la_s - 2*dla + dla_s
+    if la_1 < 0:
+        la1 = 360 + la_1
+    else:
+        la1 = la_1
+
+    nlp = int(np.fabs(dl/dla)) - 1
+
+    for i in range(nlp):
+        la = la_s + (i+1)*dla*dls
+        mpa.append(la)
+
+    #print('mpa:', mpa)
+    
+    new_mpa = []
+    for x in mpa:
+        if x > 180: 
+            nx = x - 360; 
+        elif x < -180: 
+            nx = 360 + x
         else:
-            la_s = la_s - dla + dla_s  
+            nx = x
+            
+        new_mpa.append(nx)
+
+    #print('new_mpa:', new_mpa)
     
-    #print('la_0:', la_0)
-    #print('la_s:', la_s)
-    
-    mpa.append(la_0)
-    
-    k=0
-    while True:
-        mpa.append(la_s + k*dls*dla)
-        k += 1
-        la_tmp = la_s + k*dls*dla
-        
-        if dls > 0:
-            if la_tmp > la_1: break
-        if dls < 0:
-            if la_tmp < la_1: break
-    
-    if la_1 != mpa[-1]:
-        mpa.append(la_1)
-    
-    return np.array(mpa)    
+    return new_mpa    
 
 # Find midpoints in longitude range
 def getPathPointsLong(la_0, la_1, dla):
     
-    dl = deltaLong(la_0, la_1)
-    dls = np.sign(deltaLong(la_0, la_1))
-    la_end = la_0 + dl
+    mps = getMidpoints(la_0, la_1, dla)
     
-    if dl > 0:
-        la_s = mat.ceil(la_0)
-    else:
-        la_s = mat.floor(la_0)
+    la_all = [la_0] + mps + [la_1]
     
-    if (la_end > 180) or (la_end < 180):
-        if dl > 0:
-            [la_c1, la_c2] = [180, -180+dla] #getCrossingPoints(la_s, la_end, dla)
-        else:
-            [la_c1, la_c2] = [-180, 180-dla]
-            
-        mps_1 = getMidpoints(la_0, la_c1, dla)
-        mps_2 = getMidpoints(la_c2, la_1, dla)
-        mps = np.concatenate((mps_1, mps_2), axis=None) 
-        
-    else:
-        mps = getMidpoints(la_0, la_1, dla) 
-    
-    #print(mps)
-    if np.abs(mps[-2] - mps[-1]) < dla/2:
-        np.delete(mps, -2)
-        
-    if np.abs(mps[0] - mps[1]) < dla/2:
-        np.delete(mps, 1)
-    #print(mps)
-    
-    return mps
-        
-        
+    return la_all 
         
     
 # Calculates the route central point
@@ -405,21 +372,25 @@ def plotPath(pts, dfi=5, dla=10, projection='merc', show_mid_pts=False, file_nam
             la_l.append(360 + l)
         else:
             la_l.append(l)
+    
+    fi_l = fi
     la_l = np.array(la_l)
         
     if la_l[0] > la_l[-1]:
         fi_l = np.flip(fi)
         la_l = np.flip(la_l)
     
-    fi_min = np.floor(np.min(fi_l))
+    fi_min = np.floor(np.min(fi))
     fi_min = fi_min - (fi_min%dfi)
-    fi_max = np.ceil(np.max(fi_l))
+    fi_max = np.ceil(np.max(fi))
     fi_max = fi_max + (dfi - fi_max%dfi)
-    la_min = np.floor(np.min(la_l))
+    
+    la_min = np.floor(np.min(la))
     la_min = la_min - (la_min%dla)
-    la_max = np.ceil(np.max(la_l))
+    la_max = np.ceil(np.max(la))
     la_max = la_max + (dla - la_max%dla)
     
+    #print('fi_min:', fi_min, 'fi_max:', fi_max)
     #print('la_min:', la_min, 'la_max:', la_max)
         
     fi_mid = (fi_min + fi_max)/2

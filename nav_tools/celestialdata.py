@@ -6,10 +6,12 @@ Created on Sat Mar 20 10:39:26 2021
 """
 # Native python modules
 import os
+import sys
 
 # Astronomy modules
 import skyfield.api as sfa
 from skyfield.data import hipparcos
+import skyfield.almanac as sfalm
 
 import starobject as starobj
 import planetobject as planetobj
@@ -36,7 +38,8 @@ class CelestialData:
         # 0: [1900,2050]
         # 1: [1900,2200]
         # 2: [1900,2750]
-        self.solar_db = self.get_solar_db(load,0)
+        self.solar_db = self.get_solar_db(load,0)[0]
+        self.solar_eph = self.get_solar_db(load,0)[1]
         
         # All celestial object except Earth
         # [obj_id, obj_name]
@@ -74,7 +77,11 @@ class CelestialData:
         
         # date = [dd,mm,YYYY]
         # time = [HH,MM,SS]
-        t = [int(date[2]),int(date[1]),int(date[0]),int(time[0]),int(time[1]),int(time[2])]
+        time_flt = self.filter_list_of_int(time)
+        date_flt = self.filter_list_of_int(date)
+        
+        t = date_flt + time_flt
+    
         cb_db = self.get_all_celestial_objects_db()
         
         if name in self.solar:
@@ -93,8 +100,8 @@ class CelestialData:
             ['type',otype],
             ['cbody', name],
             ['name', cb_db[name]],
-            ['date', '{:d}/{:d}/{:d}'.format(date[0],date[1],date[2])],
-            ['time', '{:d}:{:d}:{:d}'.format(time[0],time[1],time[2])],
+            ['date', '{:d}/{:d}/{:d}'.format(t[0],t[1],t[2])],
+            ['time', '{:d}:{:d}:{:d}'.format(t[3],t[4],t[5])],
             ['dec', data_time['dec']],
             ['gha', data_time['gha']],
             ['gha_a', data_time['gha_a']],
@@ -174,7 +181,8 @@ class CelestialData:
         
         pp = planetobj.PlanetObject(peph,prad,earth)
         utc = self.ts.ut1(t[0],t[1],t[2],t[3],t[4],t[5])
-        
+
+        #print('t:', t)
         #print('Date-Time:', utc.utc_strftime())
         
         return pp.get_astro_data(utc)
@@ -206,6 +214,55 @@ class CelestialData:
         
         return pp.get_altaz(utc,pos)
 
+    # date: date must be in list format [yyyy, mmm, ddd]
+    # pos: position must be in decimal degree format [fi, la]
+    # returns sunrise and sunset in list of strings [sunrise,sunset] in UTC zone
+    def get_sunrise_sunset(self,date,pos):
+
+        eph = self.solar_eph
+        location = sfa.wgs84.latlon(pos[0], pos[1], pos[2])
+        d = self.filter_list_of_int(date)
+        t0 = self.ts.utc(d[0],d[1],d[2])
+        t1 = self.ts.utc(d[0],d[1],d[2]+1)
+        
+        t, y = sfalm.find_discrete(t0, t1, sfalm.sunrise_sunset(eph, location))
+
+        # 0 - sun rise
+        # 1 - sun set
+        str_time = t.utc_strftime('%Y,%m,%d,%H,%M,%S')
+        
+        return [str_time[0].split(','), str_time[1].split(',')]
+
+    # date: date must be in list format [yyyy, mmm, ddd]
+    # pos: position must be in decimal degree format [fi, la]
+    # returns sunrise and sunset in list of strings [sunrise,sunset] in UTC zone
+    def get_meridian_transit(self,date,pos):
+
+        eph = self.solar_eph
+        location = sfa.wgs84.latlon(pos[0], pos[1], pos[2])
+        d = self.filter_list_of_int(date)
+        t0 = self.ts.utc(d[0],d[1],d[2])
+        t1 = self.ts.utc(d[0],d[1],d[2]+1)
+        
+        t, y = sfalm.find_discrete(t0, t1, sfalm.meridian_transits(eph, eph['Sun'], location))
+
+        # 0 - antimeridian passage
+        # 1 - meridian passage
+        str_time = t.utc_strftime('%Y,%m,%d,%H,%M,%S')
+        
+        return str_time[1].split(',')
+
+
+    # date: date must be in list format [yyyy, mmm, ddd]
+    # t: time must be in list format [yyyy,mm,dd,HH,MM,SS]
+    # pos: position must be in format decimal degrees [+-lat, +-long]
+    # Returns Sun celestial data
+    def get_sun_data(self, date, time, pos):
+
+        data = self.get_celestial_data('sun', date, time, pos)
+
+        return data
+        
 # ***********************
 # *** Private methods ***
 # ***********************
@@ -273,7 +330,7 @@ class CelestialData:
             'earth' : ['Earth', earth, 6371.0]
             }
         
-        return solar
+        return [solar,eph]
         
     
     # Read stars ID from Hipparcos database, to get their astronomical coordinates
@@ -311,6 +368,24 @@ class CelestialData:
                 data.append([k,self.star_db[k][0]])
         
         return dict(data)
+
+    def filter_list_of_int(self, list_data):
+
+        ld_filtered = []
+        for ld in list_data:
+            if isinstance(ld, str):
+                ss = ld.lstrip('0') # remove leading zeros
+                ld_filtered.append(int(ss))
+            elif isinstance(ld, int):
+                ld_filtered.append(int(ld))
+            else:
+                print('  ERROR: Expected integer list, but got something strange',)
+                print('     -> ', list_data)
+                print()
+                sys.exit()
+
+        return ld_filtered 
+                
     
                 
                 
