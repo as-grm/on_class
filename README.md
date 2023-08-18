@@ -10,7 +10,7 @@ You can find different Python programs solving upper calculation problems in thi
 
 ## Voyage Plan
 
-In navigation business, Voyage Plan deals primarily with three tasks:
+In the navigation business, Voyage Plan deals primarily with three tasks:
 
 1. How do we design the **Mercator Chart**?
 2. How do we compute the **Rumb Line** (RL) or **Loxodrome** problem?
@@ -31,14 +31,17 @@ In Celestial Navigation are a few essential tasks:
 
 ## Installation requirements
 
-The easiest method to run this package is by installing jupyterLab environment from [Miniconda](https://conda.io/miniconda.html).
+The easiest method to run this package is by installing the Jupyter-Lab environment from [Miniconda](https://conda.io/miniconda.html).
 
 It depends on several packages:
 - Numpy
 - Skyfiled
 - Astropy
 - Basemap
+- LaTeX  (generate star identification map)
 
 Install them via **conda** system, from conda-forge:<br>
 $> conda install numpy skyfiled astropy basemap
+
+**Important:** before first start of *Celestial navigation* programs, run nav_tools/refresh_database.ipynb to load time frame data! After it will download a few additional databases of celestial bodies.
 

@@ -81,6 +81,7 @@ class CelestialData:
         date_flt = self.filter_list_of_int(date)
         
         t = date_flt + time_flt
+        #print('filtered t:', t)
     
         cb_db = self.get_all_celestial_objects_db()
         
@@ -146,6 +147,7 @@ class CelestialData:
         ss = starobj.StarObject(name,hip,earth,self.df)
         utc = self.ts.ut1(t[0],t[1],t[2],t[3],t[4],t[5])
         
+        #print('star - t:', t)
         #print('Date-Time:', utc.utc_strftime())
         
         return ss.get_astro_data(utc)
@@ -182,7 +184,7 @@ class CelestialData:
         pp = planetobj.PlanetObject(peph,prad,earth)
         utc = self.ts.ut1(t[0],t[1],t[2],t[3],t[4],t[5])
 
-        #print('t:', t)
+        #print('planet - t:', t)
         #print('Date-Time:', utc.utc_strftime())
         
         return pp.get_astro_data(utc)
@@ -231,7 +233,7 @@ class CelestialData:
         # 1 - sun set
         str_time = t.utc_strftime('%Y,%m,%d,%H,%M,%S')
         
-        return [str_time[0].split(','), str_time[1].split(',')]
+        return [self.filter_list_of_int(str_time[0].split(',')), self.filter_list_of_int(str_time[1].split(','))]
 
     # date: date must be in list format [yyyy, mmm, ddd]
     # pos: position must be in decimal degree format [fi, la]

@@ -7,7 +7,7 @@ Created on Fri Feb 18 12:57:30 2022
 
 File containing Navigation programming tools!
 """
-
+from collections import Counter
 import math as mat
 import numpy as np
 import mpl_toolkits.basemap as bmap
@@ -272,12 +272,34 @@ def navAngle(w, df, dl):
 
 
 # Find integer start lambda based on delta lambda
-def getStartLambda(la0, dl):
+def getStartLambda(la0, dl, dla):
+
+    set = [5,10,15,20]
+    count = Counter(set)
+    #print('set {} has {} occurrences of {}'.format(set,count[dla],dla))
     
     if dl > 0:
-        la_s = mat.ceil(la0)
+        if la0 < 0:
+            la_s = mat.ceil(la0)
+            if count[dla] > 0:
+                dla_s = mat.fmod(la_s, dla)
+                la_s = la_s - dla_s
+        else:
+            la_s = mat.floor(la0)
+            if count[dla] > 0:
+                dla_s = mat.fmod(la_s, dla)
+                la_s = la_s + (dla - dla_s)
     else:
-        la_s = mat.floor(la0)
+        if la0 < 0:
+            la_s = mat.floor(la0)
+            if count[dla] > 0:
+                dla_s = mat.fmod(la_s, dla)
+                la_s = la_s - (dla + dla_s)
+        else:
+            la_s = mat.ceil(la0)
+            if count[dla] > 0:
+                dla_s = mat.fmod(la_s, dla)
+                la_s = la_s -  dla_s
         
     return la_s
 
@@ -287,7 +309,7 @@ def getMidpoints(la_0, la_1, dla):
 
     dl = deltaLong(la_0, la_1)
     dls = np.sign(dl)
-    la_s = getStartLambda(la_0, dl)
+    la_s = getStartLambda(la_0, dl, dla)
     
     mpa = []
     mpa.append(la_s)
@@ -304,7 +326,25 @@ def getMidpoints(la_0, la_1, dla):
     else:
         la1 = la_1
 
-    nlp = int(np.fabs(dl/dla)) - 1
+    if la_s < 0:
+        las = 360 + la_s
+    else:
+        las = la_s
+
+    nlp = int(np.fabs(dl/dla))
+    
+    la_end = las + nlp*dla*dls
+    if la_end < 0:
+        la_end = 360 + la_end
+    if la_end > 360:
+        la_end = la_end - 360
+
+    if dls > 0:
+        if la_end > la1:
+            nlp = nlp - 1
+    else:
+        if la_end < la1:
+            nlp = nlp - 1
 
     for i in range(nlp):
         la = la_s + (i+1)*dla*dls
