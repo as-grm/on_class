@@ -26,3 +26,18 @@ In Celestial Navigation are a few essential tasks:
 4. How do we compute **Rise** and **Set** of celestial bodies?
 5. How do we compute **Compass Deviation** or compass correction using celestial bodies?
 6. How do we draw or compute our position using celestial bodies?
+
+<hr>
+
+## Installation requirements
+
+The easiest method to run this package is by installing jupyterLab environment from [Miniconda](https://conda.io/miniconda.html).
+
+It depends on several packages:
+- Numpy
+- Skyfiled
+- Astropy
+
+Install them via **conda** system, from conda-forge:
+$> conda install numpy skyfiled astropy
+
