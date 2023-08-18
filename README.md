@@ -37,7 +37,8 @@ It depends on several packages:
 - Numpy
 - Skyfiled
 - Astropy
+- Basemap
 
-Install them via **conda** system, from conda-forge:
-$> conda install numpy skyfiled astropy
+Install them via **conda** system, from conda-forge:<br>
+$> conda install numpy skyfiled astropy basemap
 
