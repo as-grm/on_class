@@ -1,0 +1,164 @@
+% **********************************************************************
+% Copyright 2020 Aleksander GRM
+
+% Author: Aleksander GRM @fpp.uni-lj.si
+% Description: This is an unofficial report tmplate I made from scratch. 
+%              Feel free to use it, modify it, share it.
+% Version: 1.0
+% Date: 02/12/2020
+% **********************************************************************
+
+
+% ******************
+% *** page style ***
+%
+% *** single side page ***
+\documentclass[11pt]{article}
+%
+% *** two side page ***
+%     must also use correct page marginse and fancyhdr
+%
+%\documentclass[11pt,twoside]{article} % If needed twosided
+% ******************
+
+
+% ******************************************
+% *** hyper references must be set first ***
+% ******************************************
+%
+% *** choose a correct version with used compiler ***
+%
+%\usepackage[dvips]{hyperref}  % latex + dvips + ps2pdf
+%\usepackage[pdftex]{hyperref} % pdflatex
+\usepackage[xetex]{hyperref}   % xelatex (default)
+\hypersetup{
+	colorlinks = true,
+	linkcolor = {red!50!black},
+	citecolor = {blue!50!black},
+	urlcolor = {blue!80!black}
+}
+
+
+% ********************************************************
+% *** Compile with xelatex requires UTF-8 file format! ***
+% ********************************************************
+% 
+% *** UTF-8 coding
+% 
+% Comment if copiled with xelatex, unless uncomment for pdflatex!
+%
+%\usepackage[utf8x]{inputenc} % needed for pdflatex
+
+
+% ************************
+% *** Language support ***
+% ************************
+%
+\usepackage[english]{babel}
+% ************************
+
+
+% *** show labels ***
+% \usepackage{showlabels}
+
+% *********************
+% *** Paper margins ***
+% *********************
+%
+\usepackage{vmargin}
+\setpapersize{A4}
+\setmarginsrb{25mm}{10mm}{20mm}{10mm}{5mm}{5mm}{5mm}{10mm}
+
+
+%
+% *** include packages ***
+%
+\usepackage[numbers]{natbib}
+\usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{subfigure}
+\usepackage{multicol}
+\usepackage{mathtools}
+\usepackage{amsmath,amsthm,amssymb,latexsym}
+\usepackage{empheq, nccmath}
+\usepackage[many]{tcolorbox}
+\usepackage{siunitx}
+\usepackage{datetime}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+%
+% registered - \textregistered
+% copyright  - \textcopyright
+\usepackage{textcomp}
+
+%
+\usepackage[all,knot]{xy}
+\xyoption{arc}
+\usepackage{multimedia}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{bm}
+\usepackage{xfrac}
+\usepackage{tikz}
+\usepackage{cancel}
+\usetikzlibrary{shadings}
+\usepackage{wasysym}
+%
+% *** Matlab
+\usepackage[framed,numbered]{matlab-prettifier}
+
+%
+% *** Caption to be bold face ***
+%
+\usepackage{caption}
+\captionsetup[figure]{labelfont=bf}
+
+%
+% *** Numbered environment ***
+%
+%\newenvironment{naloga}[1][]{\noindent \textbf{Naloga} }{\medskip}
+\newenvironment{primer}[1][]{\noindent \textbf{Primer.}  }{\medskip}
+\newenvironment{resitev}[1][]{\noindent \textbf{Rešitev.}  }{\medskip}
+
+%
+% *** Examples ***
+%
+\theoremstyle{definition}
+\newtheorem{exmp}{}[section]
+\newtheorem{naloga}{Naloga}[section]
+
+
+%
+% *** Fancy header ***
+%
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textsc{Visible Celestial Objects DATA}}
+\chead{}
+\rhead{\textsc{A. Grm}\textcopyright 2022}
+\cfoot{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ********************************
+% *** Additional notations.tex ***
+% ********************************
+%
+\newcommand{\txtdeg}{\si{\degree}}
+\newcommand{\txtmin}{\si{\arcmiute}}
+\newcommand{\txtsec}{\si{\arcsecond}}
+\newcommand{\arcdeg}[1]{\si{\ang{#1;;}}}
+\newcommand{\arcmin}[1]{\si{\ang{;#1;}}}
+\newcommand{\arcsec}[1]{\si{\ang{;;#1}}}
+\newcommand{\posdm}[2]{\si{\ang{#1;#2;}}}
+\newcommand{\posdms}[3]{\si{\ang{#1;#2;#3}}}
+%
+% *********************
+
+\begin{document}
+
+\include{body}
+
+\end{document}
