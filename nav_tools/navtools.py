@@ -130,7 +130,11 @@ def printPosition(fi, la):
         
     return '{:s}={:s}; {:s}={:s}'.format(u_varphi, fi_str, u_lambda, la_str)
 
-# Converts angle specified in degrees, minutes and seconds in decimal degrees
+
+# Converts angle specified in:
+#  -> [deg, min.dec]
+#  -> [deg, min, sec.dec]
+#  in decimal degrees
 def dms2dd(x):
     
     sgn = np.sign(x[0])
