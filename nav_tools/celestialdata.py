@@ -8,6 +8,10 @@ Created on Sat Mar 20 10:39:26 2021
 import os
 import sys
 
+# Utils
+from astropy.time import Time
+import astropy.utils.data as aud
+
 # Astronomy modules
 import skyfield.api as sfa
 from skyfield.data import hipparcos
@@ -271,15 +275,21 @@ class CelestialData:
 
     # Set timescale for date & time conversions
     def get_timescale(self,load):
-        
+
         # Online time scale object refreshed every 30 days
         db = 'finals2000A.all'
         db_path = self.root_path + '/' + db
+
+        
         
         if not(os.path.exists(db_path)):
-            load.download(db)
+            Time.now().ut1  
+            aud.export_download_cache(db_path, overwrite=True)
+            #load.download(db)
         elif load.days_old(db) > 30.0: # check if new is on
-            load.download(db) 
+            Time.now().ut1  
+            aud.export_download_cache(db_path, overwrite=True)
+            #load.download(db) 
             
         ts = load.timescale(builtin=False) # timescale 
             
