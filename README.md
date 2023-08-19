@@ -45,7 +45,7 @@ $> conda install numpy skyfiled astropy basemap
 
 **!!! Important !!!** 
 
-Before the first start of any *Celestial navigation* programs, you must *first* run the following program:
+Before the first start of any *Celestial navigation* programs, you must *first* run the following program (run with **Restart kernel**):
 
  - *nav_tools/refresh_database.ipynb*
 
