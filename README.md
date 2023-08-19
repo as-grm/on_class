@@ -43,5 +43,8 @@ It depends on several packages:
 Install them via **conda** system, from conda-forge:<br>
 $> conda install numpy skyfiled astropy basemap
 
-**Important:** before first start of *Celestial navigation* programs, run nav_tools/refresh_database.ipynb to load time frame data! After it will download a few additional databases of celestial bodies.
+**Important:** before first start of *Celestial navigation* programs you must run:<br>
+*nav_tools/refresh_database.ipynb* to load time frame data! 
+
+After running any program for the first time, it will download two additional astronomical databases.
 
