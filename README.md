@@ -25,7 +25,7 @@ In Celestial Navigation are a few essential tasks:
 3. How do we compute the **Meridian Passage** problem?
 4. How do we compute **Rise** and **Set** of celestial bodies?
 5. How do we compute **Compass Deviation** or compass correction using celestial bodies?
-6. How do we draw or compute our position using celestial bodies?
+6. How do we compute **Calculated position** with body height (*direct methods*)?
 
 <hr>
 
