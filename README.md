@@ -1,4 +1,4 @@
-# Ocean Navigation
+# Ocean Navigation for Python
 
 Ocean Navigation is divided into two sections:
 - Calculations in **VoyagePlan**,
