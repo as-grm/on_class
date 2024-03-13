@@ -22,6 +22,7 @@ long_minus = '\u2212'
 u_varphi = '\u03C6'
 u_lambda = '\u03BB'
 u_omega = '\u03C9'
+u_delta = '\u03C9'
 
 
 # Pretty print of degrees minutes form
@@ -31,7 +32,7 @@ def prettyPrintDM(x,z):
     x_d = mat.floor(x)
     x_m = (x - x_d)*60.0
     
-    if (60.0 - x_m) < 1e-5:
+    if mat.fabs(60.0 - x_m) < 1e-3:
         x_d += 1
         x_m = 0.0
     
