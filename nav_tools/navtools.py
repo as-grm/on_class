@@ -436,7 +436,7 @@ def get_corners(fi, la, dfi, dla):
     
         
     fi_mid = (fi_min + fi_max)/2
-    la_mid = (la_0 + la_1)/2
+    la_mid = la_0 + dl/2
 
     if (la_min > la_max) and (la_min > 180):
         la_min = la_min - 360
@@ -453,7 +453,7 @@ def get_corners(fi, la, dfi, dla):
     llc = [fi_min,la_min]
     urc = [fi_max,la_max]
     mp = [fi_mid,la_mid]
-    #print('mp:', mp)
+    print('mp:', mp)
 
     return [llc, urc, mp, long360]
         
