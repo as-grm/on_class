@@ -398,6 +398,64 @@ def getRouteCentralPoint(fi, la):
         la_mid = 180 + (la_mid + 180)
     
     return [fi_mid, la_mid]
+
+
+# Find lower left and upper right map corner
+def get_corners(fi, la, dfi, dla):
+
+    la_0 = la[0]
+    la_1 = la[-1]
+    dl = deltaLong(la_0,la_1)
+    if la_0 < 0:
+        la_0 = 360 + la[0]
+    if la_1 < 0:
+        la_1 = 360 + la_1
+        
+    fi_min = np.floor(np.min(fi))
+    fi_min = fi_min - (fi_min%dfi)
+    fi_max = np.ceil(np.max(fi))
+    fi_max = fi_max + (dfi - fi_max%dfi)
+
+    if dl < 0:
+        la_min = la_1
+        la_max = la_0
+    else:
+        la_min = la_0
+        la_max = la_1
+        
+    la_min = np.floor(la_min)
+    la_min = la_min - (la_min%dla)
+    if la_min < 0:
+        la_min = 360 + la_min
+    
+    
+    la_max = np.ceil(la_max)
+    la_max = la_max + (dla - la_max%dla)
+    if la_max > 360:
+        la_max = la_max - 360
+    
+        
+    fi_mid = (fi_min + fi_max)/2
+    la_mid = (la_0 + la_1)/2
+
+    if (la_min > la_max) and (la_min > 180):
+        la_min = la_min - 360
+
+    if la_max > 180:
+        long360 = True
+    else:
+        long360 = False
+    
+        
+    #print('la_min:', la_min)
+    #print('la_max:', la_max)
+    
+    llc = [fi_min,la_min]
+    urc = [fi_max,la_max]
+    mp = [fi_mid,la_mid]
+    #print('mp:', mp)
+
+    return [llc, urc, mp, long360]
         
 
 # Plot Mercator chart and path
@@ -410,36 +468,41 @@ def plotPath(pts, dfi=5, dla=10, projection='merc', show_mid_pts=False, file_nam
 
     fi = np.transpose(pts)[0]
     la = np.transpose(pts)[1]
+
+    #print('la:', la)
+    [llc, urc, mp, long360] = get_corners(fi, la, dfi, dla)
+
+    if long360:
+        la_p = []
+        for l in la:
+            if l < 0:
+                la_p.append(360+l)
+            else:
+                la_p.append(l)
+    else:
+        la_p = la
+    #print('la_p:', la_p)
     
-    la_l = []
-    for l in la:
-        if l < 0:
-            la_l.append(360 + l)
-        else:
-            la_l.append(l)
+    fi_0 = fi[0]
+    la_0 = la_p[0]
+    fi_1 = fi[-1]
+    la_1 = la_p[-1]
     
-    fi_l = fi
-    la_l = np.array(la_l)
-        
-    if la_l[0] > la_l[-1]:
-        fi_l = np.flip(fi)
-        la_l = np.flip(la_l)
-    
-    fi_min = np.floor(np.min(fi))
-    fi_min = fi_min - (fi_min%dfi)
-    fi_max = np.ceil(np.max(fi))
-    fi_max = fi_max + (dfi - fi_max%dfi)
-    
-    la_min = np.floor(np.min(la))
-    la_min = la_min - (la_min%dla)
-    la_max = np.ceil(np.max(la))
-    la_max = la_max + (dla - la_max%dla)
+    fi_min = llc[0]
+    fi_max = urc[0]
+    la_min = llc[1]
+    la_max = urc[1]
     
     #print('fi_min:', fi_min, 'fi_max:', fi_max)
     #print('la_min:', la_min, 'la_max:', la_max)
         
-    fi_mid = (fi_min + fi_max)/2
-    la_mid = (la_min + la_max)/2
+    fi_mid = mp[0]
+    la_mid = mp[1]
+
+    llcrnrlat_c = fi_min - 5, # lower left corner
+    urcrnrlat_c = fi_max + 5,  # upper right corner
+    llcrnrlon_c = la_min - 1
+    urcrnrlon_c = la_max + 1
     
     #print('BB: ({:},{:}) - ({:},{:})'.format(fi_min,la_min,fi_max,la_max))
     
@@ -451,12 +514,11 @@ def plotPath(pts, dfi=5, dla=10, projection='merc', show_mid_pts=False, file_nam
         
     else:
         map = bmap.Basemap(projection='merc',
-            lat_0 = fi_mid,
-            lon_0 = la_mid,
-            llcrnrlat = fi_min - 5, # lower left corner
-            llcrnrlon = la_min - 1,
-            urcrnrlat = fi_max + 5,  # upper right corner
-            urcrnrlon = la_max + 1,
+            lat_ts = fi_mid,
+            llcrnrlat = llcrnrlat_c, # lower left corner
+            llcrnrlon = llcrnrlon_c,
+            urcrnrlat = urcrnrlat_c,  # upper right corner
+            urcrnrlon = urcrnrlon_c,
             resolution='l') #c croud par defaut, l low , h high , f full
         
         
@@ -479,22 +541,28 @@ def plotPath(pts, dfi=5, dla=10, projection='merc', show_mid_pts=False, file_nam
     map.drawmapboundary(fill_color='aqua')
     
     # plot lines and points
-    map.plot(la, fi, color='k', linewidth=0.15, linestyle='dashdot', latlon=True)
+    x,y = map(la_p,fi)
+    map.plot(x, y, color='k', linewidth=0.15, linestyle='dashdot', latlon=False)
     
     # plot points
-    map.plot(la[0], fi[0], marker='o', color='g', markersize=2, latlon=True)
-    map.plot(la[-1], fi[-1], marker='o', color='r', markersize=2, latlon=True)
     if show_mid_pts:
-        map.scatter(la, fi, marker='.', color='b', s=1, latlon=True)
+        map.scatter(x, y, marker='.', color='b', s=1, latlon=False)
+
+    x0,y0 = map(la_0,fi_0)
+    map.plot(x0,y0, marker='o', color='g', markersize=3, latlon=False)
+    x1,y1 = map(la_1,fi_1)
+    map.plot(x1,y1, marker='o', color='r', markersize=3, latlon=False)
+    
         
     # plot vertex point
     if pv != None:
         fi_v = pv[0]
-        if pv[1] < 0:
+        if pv[1] < 0 and long360:
             la_v = 360 + pv[1]
         else:
             la_v = pv[1]
-        map.plot(la_v, fi_v, marker='o', color='yellow', markersize=2, latlon=True)
+        xv,yv = map(la_v,fi_v)
+        map.plot(xv,yv, marker='o', color='yellow', markersize=2, latlon=False)
     
     if file_name != None:
         mpl.savefig(file_name)  
