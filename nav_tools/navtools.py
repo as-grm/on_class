@@ -453,7 +453,7 @@ def get_corners(fi, la, dfi, dla):
     llc = [fi_min,la_min]
     urc = [fi_max,la_max]
     mp = [fi_mid,la_mid]
-    print('mp:', mp)
+    #print('mp:', mp)
 
     return [llc, urc, mp, long360]
         

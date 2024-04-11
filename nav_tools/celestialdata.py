@@ -256,7 +256,7 @@ class CelestialData:
         # 1 - meridian passage
         str_time = t.utc_strftime('%Y,%m,%d,%H,%M,%S')
         
-        return self.filter_list_of_int(str_time[1].split(','))
+        return [self.filter_list_of_int(str_time[0].split(',')),self.filter_list_of_int(str_time[1].split(','))]
 
 
     # date: date must be in list format [yyyy, mmm, ddd]

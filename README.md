@@ -43,7 +43,7 @@ It depends on several packages:
 - LaTeX  (generate star identification map)
 
 Install them via **conda** system, from conda-forge:<br>
-$> conda install numpy skyfiled astropy basemap
+$> conda install --file requirements.txt
 
 **!!! Important !!!** 
 
