@@ -1,55 +1,52 @@
-# Ocean Navigation for Python
+# Ocean Navigation with Python
 
-Ocean Navigation is divided into two sections:
-- Calculations in **VoyagePlan**,
-- Calculations in **Celestial Navigation**.
+Ocean Navigation involves two main areas of focus:
+- Calculations within **Voyage Plan**,
+- Calculations within **Celestial Navigation**.
 
-Under each section are several different tasks.
+Each section comprises various tasks and problems related to marine navigation.
 
-You can find different Python programs solving upper calculation problems in this repository. For the Navigation Almanac, we use [Skyfield](https://anaconda.org/conda-forge/skyfield) module. 
+For solving these tasks, you can refer to the Python programs available in this repository. The [Skyfield](https://anaconda.org/conda-forge/skyfield) module is used for celestial navigation computations.
 
 ## Voyage Plan
 
-In the navigation business, Voyage Plan deals primarily with three tasks:
+In marine navigation, the Voyage Plan addresses three key tasks:
 
-1. How do we design the **Mercator Chart**?
-2. How do we compute the **Rumb Line** (RL) or **Loxodrome** problem?
-3. How do we compute the **Great Circle** (GC) or **Orthodrome** problem?
+1. **Mercator Chart Design**: How to design a Mercator chart for navigation purposes.
+2. **Rhumb Line (RL) or Loxodrome Problem**: How to compute the course and distance along a rhumb line.
+3. **Great Circle (GC) or Orthodrome Problem**: How to compute the shortest path between two points on the Earth's surface.
 
 ## Celestial Navigation
 
-In Celestial Navigation are a few essential tasks:
+Celestial Navigation encompasses several critical tasks:
 
-1. How do we identify stars or **Star Identification** problem?
-2. How do we compute the **Sight Reduction** problem or the **Intercept Method** problem?
-3. How do we compute the **Meridian Passage** problem?
-4. How do we compute **Rise** and **Set** of celestial bodies?
-5. How do we compute **Compass Deviation** or compass correction using celestial bodies?
-6. How do we compute **Calculated position** with body height?
-   + with assumed observer position,
-   + withouth assumed observer poition.
+1. **Star Identification**: How to identify stars for navigation purposes.
+2. **Sight Reduction or Intercept Method**: How to compute the position of a celestial body from sextant observations.
+3. **Meridian Passage**: How to determine the moment when a celestial body crosses the observer's meridian.
+4. **Rise and Set of Celestial Bodies**: How to compute the rising and setting times of celestial bodies.
+5. **Compass Deviation**: How to correct compass deviations using celestial bodies.
+6. **Calculated Position with Body Height**:
+   - With assumed observer position.
+   - Without assumed observer position.
 
-<hr>
+## Installation Requirements
 
-## Installation requirements
+The recommended method to use this package is by installing the Jupyter Lab environment from [Miniconda](https://conda.io/miniconda.html).
 
-The easiest method to run this package is by installing the Jupyter-Lab environment from [Miniconda](https://conda.io/miniconda.html).
-
-It depends on several packages:
+Ensure that the following packages are installed:
 - Numpy
-- Skyfiled
+- Skyfield
 - Astropy
 - Basemap
-- LaTeX  (generate star identification map)
+- LaTeX (required for generating star identification maps)
 
-Install them via **conda** system, from conda-forge:<br>
-$> conda install --file requirements.txt
+Install these packages using the **conda** package manager from the conda-forge channel:
+```bash
+$ conda install --file requirements.txt
+```
 
-**!!! Important !!!** 
+**Important Note:** Before running any Celestial Navigation programs for the first time, execute the following program (and restart the kernel afterward):
 
-Before the first start of any *Celestial navigation* programs, you must *first* run the following program (run with **Restart kernel**):
+- **nav_tools/refresh_database.ipynb**
 
- - *nav_tools/refresh_database.ipynb*
-
-It will download the time frame database! After running any program for the first time, it will download two additional astronomical databases.
-
+This program will download the necessary time frame database. Additionally, running any Celestial Navigation program for the first time will trigger the download of two additional astronomical databases.
