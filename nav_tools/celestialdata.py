@@ -387,7 +387,10 @@ class CelestialData:
         for ld in list_data:
             if isinstance(ld, str):
                 ss = ld.lstrip('0') # remove leading zeros
-                ld_filtered.append(int(ss))
+                if ss == '':
+                    ld_filtered.append(0) 
+                else:
+                    ld_filtered.append(int(ss))
             elif isinstance(ld, int):
                 ld_filtered.append(int(ld))
             else:
